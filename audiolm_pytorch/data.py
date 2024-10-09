@@ -1,4 +1,6 @@
 from pathlib import Path
+from glob import glob
+import os
 from functools import partial, wraps
 
 from beartype import beartype
@@ -44,7 +46,7 @@ class SoundDataset(Dataset):
         path = Path(folder)
         assert path.exists(), f'folder "{str(path)}" does not exist'
 
-        files = [file for ext in exts for file in path.glob(f'**/*.{ext}')]
+        files = [os.path.join(folder, file) for ext in exts for file in glob(f'**/*.{ext}', root_dir=folder, recursive=True)]
         assert len(files) > 0, 'no sound files found'
 
         self.files = files
