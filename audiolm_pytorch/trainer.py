@@ -53,7 +53,7 @@ from packaging import version
 
 from accelerate import Accelerator, DistributedType
 from accelerate.utils import DistributedDataParallelKwargs, InitProcessGroupKwargs
-from accelerate.tracking import WandBTracker
+from accelerate.tracking import WandBTracker, on_main_process
 
 # constants
 
@@ -520,15 +520,16 @@ class SoundStreamTrainer(nn.Module):
     def wandb_tracker(self, project, run = None, hps = None):
         assert self.use_wandb_tracking, '`use_wandb_tracking` must be set to True on SoundStreamTrainer'
 
-        hps = default(hps, self.tracker_hps)
+        if self.accelerator.is_main_process:
+            hps = default(hps, self.tracker_hps)
 
-        self.accelerator.init_trackers(project, config = None)
+            self.accelerator.init_trackers(project, config = hps, init_kwargs={"wandb":hps})
 
-        if exists(run):
-            wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
-            assert exists(wandb_tracker)
+            if exists(run):
+                wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
+                assert exists(wandb_tracker), f"all trackers are[{self.accelerator.trackers}]"
 
-            wandb_tracker.run.name = run
+                wandb_tracker.run.name = run
 
         yield
 
@@ -853,7 +854,7 @@ class SemanticTransformerTrainer(nn.Module):
         hps = {"num_train_steps": num_train_steps, "data_max_length": data_max_length, "learning_rate": lr}
         self.tracker_hps = hps
 
-        self.accelerator.init_trackers("semantic", config=hps)
+        self.accelerator.init_trackers("semantic", config=hps, init_kwargs={"wandb":hps})
         self.average_valid_loss_over_grad_accum_every = average_valid_loss_over_grad_accum_every
 
     def save(self, path):
@@ -907,15 +908,16 @@ class SemanticTransformerTrainer(nn.Module):
     def wandb_tracker(self, project, run = None, hps = None):
         assert self.use_wandb_tracking, '`use_wandb_tracking` must be set to True on SemanticTransformerTrainer'
 
-        hps = default(hps, self.tracker_hps)
+        if self.accelerator.is_main_process:
+            hps = default(hps, self.tracker_hps)
 
-        self.accelerator.init_trackers(project, config = None)
+            self.accelerator.init_trackers(project, config = hps, init_kwargs={"wandb":hps})
 
-        if exists(run):
-            wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
-            assert exists(wandb_tracker)
+            if exists(run):
+                wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
+                assert exists(wandb_tracker), f"all trackers are[{self.accelerator.trackers}]"
 
-            wandb_tracker.run.name = run
+                wandb_tracker.run.name = run
 
         yield
 
@@ -1154,7 +1156,7 @@ class CoarseTransformerTrainer(nn.Module):
         hps = {"num_train_steps": num_train_steps, "data_max_length": data_max_length, "learning_rate": lr}
         self.tracker_hps = hps
 
-        self.accelerator.init_trackers("coarse", config=hps)
+        self.accelerator.init_trackers("coarse", config=hps, init_kwargs={"wandb":hps})
 
         self.train_wrapper.to(self.device)
         self.average_valid_loss_over_grad_accum_every = average_valid_loss_over_grad_accum_every
@@ -1186,15 +1188,16 @@ class CoarseTransformerTrainer(nn.Module):
     def wandb_tracker(self, project, run = None, hps = None):
         assert self.use_wandb_tracking, '`use_wandb_tracking` must be set to True on CoarseTransformerTrainer'
 
-        hps = default(hps, self.tracker_hps)
+        if self.accelerator.is_main_process:
+            hps = default(hps, self.tracker_hps)
 
-        self.accelerator.init_trackers(project, config = None)
+            self.accelerator.init_trackers(project, config = hps, init_kwargs={"wandb":hps})
 
-        if exists(run):
-            wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
-            assert exists(wandb_tracker)
+            if exists(run):
+                wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
+                assert exists(wandb_tracker), f"all trackers are[{self.accelerator.trackers}]"
 
-            wandb_tracker.run.name = run
+                wandb_tracker.run.name = run
 
         yield
 
@@ -1451,7 +1454,7 @@ class FineTransformerTrainer(nn.Module):
         hps = {"num_train_steps": num_train_steps, "data_max_length": data_max_length, "learning_rate": lr}
         self.tracker_hps = hps
 
-        self.accelerator.init_trackers("fine", config=hps)
+        self.accelerator.init_trackers("fine", config=hps, init_kwargs={"wandb":hps})
 
         self.train_wrapper.to(self.device)
         self.average_valid_loss_over_grad_accum_every = average_valid_loss_over_grad_accum_every
@@ -1483,15 +1486,16 @@ class FineTransformerTrainer(nn.Module):
     def wandb_tracker(self, project, run = None, hps = None):
         assert self.use_wandb_tracking, '`use_wandb_tracking` must be set to True on FineTransformerTrainer'
 
-        hps = default(hps, self.tracker_hps)
+        if self.accelerator.is_main_process:
+            hps = default(hps, self.tracker_hps)
 
-        self.accelerator.init_trackers(project, config = None)
+            self.accelerator.init_trackers(project, config = hps, init_kwargs={"wandb":hps})
 
-        if exists(run):
-            wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
-            assert exists(wandb_tracker)
+            if exists(run):
+                wandb_tracker = find_first(lambda el: isinstance(el, WandBTracker), self.accelerator.trackers)
+                assert exists(wandb_tracker), f"all trackers are[{self.accelerator.trackers}]"
 
-            wandb_tracker.run.name = run
+                wandb_tracker.run.name = run
 
         yield
 
