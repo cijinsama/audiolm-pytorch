@@ -854,7 +854,6 @@ class SemanticTransformerTrainer(nn.Module):
         hps = {"num_train_steps": num_train_steps, "data_max_length": data_max_length, "learning_rate": lr}
         self.tracker_hps = hps
 
-        self.accelerator.init_trackers("semantic", config=hps, init_kwargs={"wandb":hps})
         self.average_valid_loss_over_grad_accum_every = average_valid_loss_over_grad_accum_every
 
     def save(self, path):
@@ -1156,8 +1155,6 @@ class CoarseTransformerTrainer(nn.Module):
         hps = {"num_train_steps": num_train_steps, "data_max_length": data_max_length, "learning_rate": lr}
         self.tracker_hps = hps
 
-        self.accelerator.init_trackers("coarse", config=hps, init_kwargs={"wandb":hps})
-
         self.train_wrapper.to(self.device)
         self.average_valid_loss_over_grad_accum_every = average_valid_loss_over_grad_accum_every
 
@@ -1453,8 +1450,6 @@ class FineTransformerTrainer(nn.Module):
 
         hps = {"num_train_steps": num_train_steps, "data_max_length": data_max_length, "learning_rate": lr}
         self.tracker_hps = hps
-
-        self.accelerator.init_trackers("fine", config=hps, init_kwargs={"wandb":hps})
 
         self.train_wrapper.to(self.device)
         self.average_valid_loss_over_grad_accum_every = average_valid_loss_over_grad_accum_every
