@@ -1574,6 +1574,7 @@ class FineTransformerTrainer(nn.Module):
 
             valid_loss = valid_loss.clone() # avoid inference mode to non-inference mode error
             valid_loss /= self.average_valid_loss_over_grad_accum_every
+            valid_loss = valid_loss.item()
 
             self.print(f'{steps}: valid loss {valid_loss}')
             self.accelerator.log({"valid_loss": valid_loss}, step=steps)
